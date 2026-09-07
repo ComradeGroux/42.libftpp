@@ -9,12 +9,17 @@ TARGET := libftpp.a
 
 BUILD_DIR	:= build
 OBJS_DIR	:= $(BUILD_DIR)/objs
+SRCS		:= 
+OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
-SRCS	:= $(wildcard $(SRC_DIR)/*.cpp)
-OBJS	:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
+TEST_DIR		:= tests
+OBJS_TEST_DIR	:= $(BUILD_DIR)/test_objs
+TEST_SRCS		:= $(wildcard $(TEST_DIR)/src/*.cpp)
+TEST_OBJS		:= $(addprefix $(OBJS_TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=.o)))
+TEST_BINS		:= $(addsuffix .test,$(addprefix $(TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=))))
 
 CXX 		:= g++
-CXXFLAGS	:= -Wall -Wextra -Werror -std=c++20
+CXXFLAGS	:= -Wall -Wextra -Werror -std=c++20 -I.
 
 all: $(TARGET)
 
@@ -34,18 +39,46 @@ $(OBJS_DIR)/%.o: %.cpp | $(OBJS_DIR)
 	 $(CXX) $(CXXFLAGS) -c $< -o $@ && \
 	 printf "$(ERASE)$(GREEN)  ✓ $<$(RESET)\n"\
 
+
+
+
+test: all $(TEST_BINS)
+	@printf "$(GREEN)  ✓ All tests built$(RESET)\n"
+
+$(OBJS_TEST_DIR):
+	@mkdir -p $@
+$(TEST_OBJS): | $(OBJS_TEST_DIR)/.compile_start
+$(OBJS_TEST_DIR)/.compile_start: $(TEST_SRCS)
+	@printf "$(BOLD)Compiling tests$(RESET)\n"
+	@touch $@
+$(OBJS_TEST_DIR)/%.o: $(TEST_DIR)/src/%.cpp | $(OBJS_TEST_DIR)
+	@printf "$(GRAY)  $<...$(RESET)" && \
+	 $(CXX) $(CXXFLAGS) -c $< -o $@ && \
+	 printf "$(ERASE)$(GREEN)  ✓ $<$(RESET)\n"
+
+$(TEST_DIR)/%.test: $(OBJS_TEST_DIR)/%.o $(TARGET)
+	@printf "$(GRAY)  Linking $@...$(RESET)" && \
+	 $(CXX) $(CXXFLAGS) $< $(TARGET) -o $@ && \
+	 printf "$(ERASE)$(GREEN)  ✓ $@$(RESET)\n"
+
+
+
 clean:
 	@printf "$(GRAY)  Removing build objects...$(RESET)" && \
 	 rm -rf $(OBJS_DIR) && \
 	 printf "$(ERASE)"
 	@printf "$(GREEN)  ✓ Build files cleaned$(RESET)\n"
+	@printf "$(GRAY)  Removing test build objects...$(RESET)" && \
+	 rm -rf $(OBJS_TEST_DIR) && \
+	 printf "$(ERASE)"
+	@printf "$(GREEN)  ✓ Test build files cleaned$(RESET)\n"
 
 fclean: clean
-	@printf "$(GRAY)  Removing $(BUILD_DIR) and $(TARGET)...$(RESET)" && \
-	 rm -rf $(BUILD_DIR) $(TARGET) && \
+	@printf "$(GRAY)  Removing $(BUILD_DIR), $(TARGET) and test binaries...$(RESET)" && \
+	 rm -rf $(BUILD_DIR) $(TARGET) $(TEST_BINS) && \
 	 printf "$(ERASE)"
 	@printf "$(GREEN)  ✓ $(TARGET) cleaned$(RESET)\n"
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re test
