@@ -9,14 +9,14 @@ TARGET := libftpp.a
 
 BUILD_DIR	:= build
 OBJS_DIR	:= $(BUILD_DIR)/objs
-SRCS		:= 
+SRCS		:= data_structures/data_buffer/data_buffer.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 TEST_DIR		:= tests
 OBJS_TEST_DIR	:= $(BUILD_DIR)/test_objs
 TEST_SRCS		:= $(wildcard $(TEST_DIR)/src/*.cpp)
 TEST_OBJS		:= $(addprefix $(OBJS_TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=.o)))
-TEST_BINS		:= $(addsuffix .test,$(addprefix $(TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=))))
+TEST_BINS		:= $(addprefix $(TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=)))
 
 CXX 		:= g++
 CXXFLAGS	:= -Wall -Wextra -Werror -std=c++20 -I.
@@ -34,7 +34,7 @@ $(OBJS): | $(OBJS_DIR)/.compile_start
 $(OBJS_DIR)/.compile_start: $(SRCS)
 	@printf "$(BOLD)Compiling$(RESET)\n"
 	@touch $@
-$(OBJS_DIR)/%.o: %.cpp | $(OBJS_DIR)
+$(OBJS_DIR)/%.o: $(SRCS) | $(OBJS_DIR)
 	@printf "$(GRAY)  $<...$(RESET)" && \
 	 $(CXX) $(CXXFLAGS) -c $< -o $@ && \
 	 printf "$(ERASE)$(GREEN)  ✓ $<$(RESET)\n"\
@@ -56,7 +56,7 @@ $(OBJS_TEST_DIR)/%.o: $(TEST_DIR)/src/%.cpp | $(OBJS_TEST_DIR)
 	 $(CXX) $(CXXFLAGS) -c $< -o $@ && \
 	 printf "$(ERASE)$(GREEN)  ✓ $<$(RESET)\n"
 
-$(TEST_DIR)/%.test: $(OBJS_TEST_DIR)/%.o $(TARGET)
+$(TEST_DIR)/%: $(OBJS_TEST_DIR)/%.o $(TARGET)
 	@printf "$(GRAY)  Linking $@...$(RESET)" && \
 	 $(CXX) $(CXXFLAGS) $< $(TARGET) -o $@ && \
 	 printf "$(ERASE)$(GREEN)  ✓ $@$(RESET)\n"
