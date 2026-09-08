@@ -1,3 +1,5 @@
+#pragma once
+
 #include "observer.hpp"
 
 template <typename TEvent>
