@@ -9,7 +9,8 @@ TARGET := libftpp.a
 
 BUILD_DIR	:= build
 OBJS_DIR	:= $(BUILD_DIR)/objs
-SRCS		:=	data_structures/data_buffer/data_buffer.cpp
+SRCS		:=	data_structures/data_buffer/data_buffer.cpp \
+				design_pattern/memento/memento.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 TEST_DIR		:= tests

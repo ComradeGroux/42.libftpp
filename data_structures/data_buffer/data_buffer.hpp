@@ -9,9 +9,6 @@
 class DataBuffer
 {
 	private:
-		DataBuffer(const DataBuffer& src) = delete;
-		DataBuffer&	operator=(const DataBuffer& src) = delete;
-
 		std::vector<unsigned char>	_buffer;
 		size_t						_readOffset = 0;
 
@@ -28,9 +25,6 @@ class DataBuffer
 		void	_deserialize(std::array<T, N>& arr);
 
 	public:
-		DataBuffer(void) = default;
-		~DataBuffer(void) = default;
-
 		template <typename TType>
 		DataBuffer&	operator<<(const TType& obj);
 
