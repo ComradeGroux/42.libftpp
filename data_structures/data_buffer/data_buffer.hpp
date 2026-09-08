@@ -1,6 +1,10 @@
 #pragma once
 
-#include <sstream>
+#include <vector>
+#include <type_traits>
+#include <stdexcept>
+#include <string>
+#include <array>
 
 class DataBuffer
 {
@@ -8,17 +12,35 @@ class DataBuffer
 		DataBuffer(const DataBuffer& src) = delete;
 		DataBuffer&	operator=(const DataBuffer& src) = delete;
 
-		std::stringstream	_buffer;
+		std::vector<unsigned char>	_buffer;
+		size_t						_readOffset = 0;
+
+		void	_serialize(const std::string& str);
+		template <typename TType>
+		void	_serialize(const TType& obj);
+		template <typename T, size_t N>
+		void	_serialize(const std::array<T, N>& arr);
+
+		void	_deserialize(std::string& str);
+		template <typename TType>
+		void	_deserialize(TType& obj);
+		template <typename T, size_t N>
+		void	_deserialize(std::array<T, N>& arr);
 
 	public:
-		DataBuffer(void);
-		~DataBuffer(void);
+		DataBuffer(void) = default;
+		~DataBuffer(void) = default;
 
 		template <typename TType>
 		DataBuffer&	operator<<(const TType& obj);
 
 		template <typename TType>
-		DataBuffer&	operator>>(const TType& obj);
+		DataBuffer&	operator>>(TType& obj);
+
+		class NotEnoughByteToDeserializeException : public std::runtime_error
+		{
+			public: explicit NotEnoughByteToDeserializeException() : runtime_error("DataBuffer: Not enough byte to deserialize.") {}
+		};
 };
 
 #include "data_buffer.tpp"

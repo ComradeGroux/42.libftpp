@@ -3,7 +3,8 @@
 #include "pool.hpp"
 
 #include <algorithm>
-#include <iostream>
+#include <utility>
+#include <cassert>
 
 template <typename TType>
 void	Pool<TType>::_growPool(const size_t& newSize)
@@ -12,8 +13,8 @@ void	Pool<TType>::_growPool(const size_t& newSize)
 	{
 		TType*	raw = static_cast<TType *>(operator new(sizeof(TType)));
 
-		_availableObjects.push_back(raw);
 		_allocatedObjects.push_back(std::unique_ptr<TType, RawDeleter<TType>>(raw));
+		_availableObjects.push_back(raw);
 
 		_totalAllocated++;
 	}
@@ -77,12 +78,41 @@ Pool<TType>::Object::Object(Pool<TType>* pool, TType* value) : _pool(pool), _val
 template <typename TType>
 Pool<TType>::Object::~Object(void)
 {
-	_value->~TType();
-	_pool->_availableObjects.push_back(_value);
+	if (_value)
+	{
+		_value->~TType();
+		_pool->_availableObjects.push_back(_value);
+	}
+}
+
+template <typename TType>
+Pool<TType>::Object::Object(Object&& src) noexcept : _pool(src._pool), _value(src._value)
+{
+	src._pool = nullptr;
+	src._value = nullptr;
+}
+
+template <typename TType>
+typename Pool<TType>::Object&	Pool<TType>::Object::operator=(Object&& src) noexcept
+{
+	if (this != &src)
+	{
+		if (_value)
+		{
+			_value->~TType();
+			_pool->_availableObjects.push_back(_value);
+		}
+		_pool = src._pool;
+		_value = src._value;
+		src._pool = nullptr;
+		src._value = nullptr;
+	}
+	return *this;
 }
 
 template <typename TType>
 TType*	Pool<TType>::Object::operator->(void)
 {
+	assert(_value != nullptr);
 	return _value;
 }

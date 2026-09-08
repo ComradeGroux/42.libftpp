@@ -38,8 +38,10 @@ class Pool
 				friend class Pool;
 			
 			public:
+				Object(Object&& src) noexcept;
+				Object&	operator=(Object&& src) noexcept;
 				~Object(void);
-				TType*	operator->(void);
+				TType*			operator->(void);
 		};
 		void	resize(const size_t& numberOfObjectStored);
 

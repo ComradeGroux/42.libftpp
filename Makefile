@@ -9,7 +9,7 @@ TARGET := libftpp.a
 
 BUILD_DIR	:= build
 OBJS_DIR	:= $(BUILD_DIR)/objs
-SRCS		:= data_structures/data_buffer/data_buffer.cpp
+SRCS		:=	data_structures/data_buffer/data_buffer.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 TEST_DIR		:= tests
@@ -19,7 +19,7 @@ TEST_OBJS		:= $(addprefix $(OBJS_TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=.o)))
 TEST_BINS		:= $(addprefix $(TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=)))
 
 CXX 		:= g++
-CXXFLAGS	:= -Wall -Wextra -Werror -std=c++20 -I.
+CXXFLAGS	:= -Wall -Wextra -Werror -std=c++17 -I.
 
 all: $(TARGET)
 
@@ -34,7 +34,8 @@ $(OBJS): | $(OBJS_DIR)/.compile_start
 $(OBJS_DIR)/.compile_start: $(SRCS)
 	@printf "$(BOLD)Compiling$(RESET)\n"
 	@touch $@
-$(OBJS_DIR)/%.o: $(SRCS) | $(OBJS_DIR)
+vpath %.cpp $(sort $(dir $(SRCS)))
+$(OBJS_DIR)/%.o: %.cpp | $(OBJS_DIR)
 	@printf "$(GRAY)  $<...$(RESET)" && \
 	 $(CXX) $(CXXFLAGS) -c $< -o $@ && \
 	 printf "$(ERASE)$(GREEN)  ✓ $<$(RESET)\n"\
