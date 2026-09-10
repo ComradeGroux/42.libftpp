@@ -10,7 +10,8 @@ TARGET := libftpp.a
 BUILD_DIR	:= build
 OBJS_DIR	:= $(BUILD_DIR)/objs
 SRCS		:=	data_structures/data_buffer/data_buffer.cpp \
-				design_pattern/memento/memento.cpp
+				design_pattern/memento/memento.cpp \
+				io_stream/thread_safe_iostream.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 TEST_DIR		:= tests
@@ -54,9 +55,7 @@ $(OBJS_TEST_DIR)/.compile_start: $(TEST_SRCS)
 	@printf "$(BOLD)Compiling tests$(RESET)\n"
 	@touch $@
 $(OBJS_TEST_DIR)/%.o: $(TEST_DIR)/src/%.cpp | $(OBJS_TEST_DIR)
-	@printf "$(GRAY)  $<...$(RESET)" && \
-	 $(CXX) $(CXXFLAGS) -c $< -o $@ && \
-	 printf "$(ERASE)$(GREEN)  ✓ $<$(RESET)\n"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TEST_DIR)/%: $(OBJS_TEST_DIR)/%.o $(TARGET)
 	@printf "$(GRAY)  Linking $@...$(RESET)" && \
