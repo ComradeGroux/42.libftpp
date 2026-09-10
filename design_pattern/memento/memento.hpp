@@ -4,8 +4,6 @@
 
 class Memento
 {
-	private:
-
 	public:
 		class Snapshot
 		{
@@ -24,7 +22,7 @@ class Memento
 		void		load(const Snapshot& state);
 
 	protected:
-		virtual void	_saveToSnapshot(Snapshot& snapshot) = 0;
+		virtual void	_saveToSnapshot(Snapshot& snapshot) const = 0;
 		virtual void	_loadFromSnapshot(Snapshot& snapshot) = 0;
 };
 

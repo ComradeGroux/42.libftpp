@@ -1,47 +1,98 @@
 #include "design_pattern/singleton/singleton.hpp"
 
+#include <cassert>
 #include <iostream>
+#include <string>
+#include <stdexcept>
 
-class MyClass : public Singleton<MyClass>
+static int g_testCount = 0;
+static int g_failCount = 0;
+
+#define CHECK(cond) do { \
+	g_testCount++; \
+	if (!(cond)) { \
+		g_failCount++; \
+		std::cerr << "  [FAIL] " << #cond << " (line " << __LINE__ << ")\n"; \
+	} \
+} while (0)
+
+// Classe geree en singleton : un logger simple avec un prefixe configure une seule fois
+class Logger : public Singleton<Logger>
 {
-	private:
-		friend class Singleton<MyClass>;
-
-		MyClass(int value)
-		{
-			std::cout << "MyClass constructor, with value [" << value << "]" << std::endl;
-		}
-
 	public:
-		void printMessage()
+		std::string prefix;
+		int messageCount = 0;
+
+		void	log(const std::string& msg)
 		{
-			std::cout << "Hello from MyClass" << std::endl;
+			messageCount++;
+			(void)msg;
 		}
+
+	private:
+		explicit Logger(std::string prefix_) : prefix(std::move(prefix_)) {}
+
+		friend class Singleton<Logger>;
 };
 
-int main()
+static void	testInstantiateThenInstance(void)
 {
+	std::cout << "-- testInstantiateThenInstance --\n";
+
+	Logger::instantiate(std::string("[APP] "));
+	Logger* logger = Logger::instance();
+
+	CHECK(logger != nullptr);
+	CHECK(logger->prefix == "[APP] ");
+}
+
+static void	testInstanceReturnsSameAddress(void)
+{
+	std::cout << "-- testInstanceReturnsSameAddress --\n";
+
+	Logger* first = Logger::instance();
+	Logger* second = Logger::instance();
+
+	CHECK(first == second);
+}
+
+static void	testStateIsSharedAcrossCalls(void)
+{
+	std::cout << "-- testStateIsSharedAcrossCalls --\n";
+
+	Logger::instance()->log("hello");
+	Logger::instance()->log("world");
+
+	CHECK(Logger::instance()->messageCount == 2);
+}
+
+static void	testDoubleInstantiateThrows(void)
+{
+	std::cout << "-- testDoubleInstantiateThrows --\n";
+
+	// A ce stade, Logger a deja ete instancie par testInstantiateThenInstance().
+	bool threw = false;
 	try
 	{
-		MyClass::instance();
+		Logger::instantiate(std::string("[SHOULD_FAIL] "));
 	}
-	catch (const std::exception& e)
+	catch (const std::exception&)
 	{
-		std::cout << e.what() << std::endl;
+		threw = true;
 	}
 
-	MyClass::instantiate(42);
+	CHECK(threw);
+	// L'etat precedent ne doit pas avoir ete ecrase par la tentative ratee
+	CHECK(Logger::instance()->prefix == "[APP] ");
+}
 
-	MyClass::instance()->printMessage();
+int	main(void)
+{
+	testInstantiateThenInstance();
+	testInstanceReturnsSameAddress();
+	testStateIsSharedAcrossCalls();
+	testDoubleInstantiateThrows();
 
-	try
-	{
-		MyClass::instantiate(100);
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what() << std::endl;
-	}
-
-	return 0;
+	std::cout << "\n" << (g_testCount - g_failCount) << "/" << g_testCount << " checks passed.\n";
+	return g_failCount == 0 ? 0 : 1;
 }

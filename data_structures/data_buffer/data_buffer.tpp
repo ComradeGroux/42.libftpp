@@ -28,13 +28,6 @@ struct has_insert<T, std::void_t <
 	decltype(std::declval<T>().insert(std::declval<typename T::value_type>()))
 >> : std::true_type {};
 
-template <typename T, typename TIndex, typename = void>
-struct has_operator_at : std::false_type {};
-template <typename T, typename TIndex>
-struct has_operator_at<T, TIndex, std::void_t <
-	decltype(std::declval<T>()[std::declval<TIndex>()])
->> : std::true_type {};
-
 template <typename T>
 struct dependent_false : std::false_type {};
 
@@ -60,13 +53,13 @@ void	DataBuffer::_serialize(const TType& obj)
 		const unsigned char*	begin = reinterpret_cast<const unsigned char *>(&obj);
 		_buffer.insert(_buffer.end(), begin, begin + sizeof(TType));
 	}
-	else if constexpr (is_container<TType>::value && has_operator_at<TType, size_t>::value && (has_push_back<TType>::value || has_insert<TType>::value))
+	else if constexpr (is_container<TType>::value && (has_push_back<TType>::value || has_insert<TType>::value))
 	{
 		size_t	size = std::distance(obj.begin(), obj.end());
 		_serialize(size);
 
-		for (size_t i = 0; i < size; i++)
-			_serialize(obj[i]);
+		for (typename TType::const_iterator it = obj.begin(); it != obj.end(); it++)
+			_serialize(*it);
 	}
 	else
 		static_assert(dependent_false<TType>::value, "DataBuffer: Unserializable");
@@ -98,12 +91,9 @@ void	DataBuffer::_deserialize(TType& obj)
 		size_t	size = 0;
 		_deserialize(size);
 
-		if (std::distance(obj.begin(), obj.end()) < size)
-			throw NotEnoughByteToDeserializeException();
-
-		TType	tmp;
 		for (size_t i = 0; i < size; i++)
 		{
+			typename TType::value_type	tmp;
 			_deserialize(tmp);
 			obj.push_back(tmp);
 		}
@@ -113,12 +103,9 @@ void	DataBuffer::_deserialize(TType& obj)
 		size_t	size = 0;
 		_deserialize(size);
 
-		if (std::distance(obj.begin(), obj.end()) < size)
-			throw NotEnoughByteToDeserializeException();
-
-		TType	tmp;
 		for (size_t i = 0; i < size; i++)
 		{
+			typename TType::value_type	tmp;
 			_deserialize(tmp);
 			obj.insert(obj.end(), tmp);
 		}
