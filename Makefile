@@ -11,7 +11,10 @@ BUILD_DIR	:= build
 OBJS_DIR	:= $(BUILD_DIR)/objs
 SRCS		:=	data_structures/data_buffer/data_buffer.cpp \
 				design_pattern/memento/memento.cpp \
-				io_stream/thread_safe_iostream.cpp
+				io_stream/thread_safe_iostream.cpp \
+				threading/thread/thread.cpp \
+				threading/worker_pool/worker_pool.cpp \
+				threading/persistent_worker/persistent_worker.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 TEST_DIR		:= tests

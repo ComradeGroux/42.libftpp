@@ -10,7 +10,7 @@ ThreadSafeIOStream::~ThreadSafeIOStream(void)
 
 void	ThreadSafeIOStream::_flush(void)
 {
-	const std::string	outputStr = _prefix + _output.str();
+	const std::string	outputStr = _prefix + " " + _output.str();
 	_output.str("");
 	_output.clear();
 
