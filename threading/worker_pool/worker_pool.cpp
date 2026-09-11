@@ -33,7 +33,7 @@ void	WorkerPool::_startThread(void)
 			}
 			catch(const std::exception& e)
 			{
-				threadSafeCout << e.what() << std::endl;
+				threadSafeCerr << e.what() << std::endl;
 			}
 		}
 		catch(const std::exception& e)

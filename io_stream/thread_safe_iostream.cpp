@@ -2,6 +2,9 @@
 
 std::mutex	ThreadSafeIOStream::_mutex;
 
+ThreadSafeIOStream::ThreadSafeIOStream(std::ostream& targetStream) : _targetStream(targetStream)
+{}
+
 ThreadSafeIOStream::~ThreadSafeIOStream(void)
 {
 	if (!_output.str().empty())
@@ -15,7 +18,7 @@ void	ThreadSafeIOStream::_flush(void)
 	_output.clear();
 
 	std::lock_guard<std::mutex>	lock(_mutex);
-	std::cout << outputStr << std::flush;
+	_targetStream << outputStr << std::flush;
 }
 
 void	ThreadSafeIOStream::setPrefix(const std::string& prefix)

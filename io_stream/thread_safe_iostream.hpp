@@ -14,10 +14,12 @@ class ThreadSafeIOStream
 		std::istringstream	_input;
 		bool				_unitBuff = false;
 		bool				_unitBuffInput = false;
+		std::ostream&		_targetStream;
 
 		void	_flush(void);
 
 	public:
+		ThreadSafeIOStream(std::ostream& targetStream);
 		~ThreadSafeIOStream(void);
 
 		template <typename TType>
@@ -44,6 +46,7 @@ class ThreadSafeIOStream
 		};
 };
 
-inline thread_local ThreadSafeIOStream	threadSafeCout;
+inline thread_local ThreadSafeIOStream	threadSafeCout(std::cout);
+inline thread_local ThreadSafeIOStream	threadSafeCerr(std::cerr);
 
 #include "thread_safe_iostream.tpp"
