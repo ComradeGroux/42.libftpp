@@ -2,7 +2,7 @@
 
 std::mutex	ThreadSafeIOStream::_mutex;
 
-ThreadSafeIOStream::ThreadSafeIOStream(std::ostream& targetStream) : _targetStream(targetStream)
+ThreadSafeIOStream::ThreadSafeIOStream(std::ostream& targetStream = std::cout) : _targetStream(targetStream)
 {}
 
 ThreadSafeIOStream::~ThreadSafeIOStream(void)

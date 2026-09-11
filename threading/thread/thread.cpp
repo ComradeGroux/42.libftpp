@@ -17,6 +17,7 @@ void	Thread::start(void)
 	_running = true;
 	_thread = std::thread([this]() {
 		threadSafeCout.setPrefix("[" + _name + "]");
+		threadSafeCerr.setPrefix("[" + _name + "]");
 		_f();
 	});
 }
