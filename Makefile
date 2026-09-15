@@ -14,7 +14,9 @@ SRCS		:=	data_structures/data_buffer/data_buffer.cpp \
 				io_stream/thread_safe_iostream.cpp \
 				threading/thread/thread.cpp \
 				threading/worker_pool/worker_pool.cpp \
-				threading/persistent_worker/persistent_worker.cpp
+				threading/persistent_worker/persistent_worker.cpp \
+				mathematics/random_2d_coordinate_generator/random_2d_coordinate_generator.cpp \
+				mathematics/perlin_noise_2d/perlin_noise_2d.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
 
 TEST_DIR		:= tests

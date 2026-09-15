@@ -19,7 +19,7 @@ class ThreadSafeIOStream
 		void	_flush(void);
 
 	public:
-		ThreadSafeIOStream(std::ostream& targetStream);
+		ThreadSafeIOStream(std::ostream& targetStream = std::cout);
 		~ThreadSafeIOStream(void);
 
 		template <typename TType>
