@@ -51,3 +51,25 @@ TType	ThreadSafeQueue<TType>::pop_back(void)
 	_queue.pop_back();
 	return res;
 }
+
+template <typename TType>
+bool	ThreadSafeQueue<TType>::try_pop_front(TType& res)
+{
+	std::lock_guard<std::mutex>	lock(_mutex);
+	if (_queue.empty())
+		return false;
+	res = std::move(_queue.back());
+	_queue.pop_front();
+	return true;
+}
+
+template <typename TType>
+bool	ThreadSafeQueue<TType>::try_pop_back(TType& res)
+{
+	std::lock_guard<std::mutex>	lock(_mutex);
+	if (_queue.empty())
+		return false;
+	res = std::move(_queue.back());
+	_queue.pop_back();
+	return true;
+}

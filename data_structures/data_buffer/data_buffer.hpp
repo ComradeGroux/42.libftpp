@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <type_traits>
 #include <stdexcept>
 #include <string>
 #include <array>
@@ -30,6 +29,10 @@ class DataBuffer
 
 		template <typename TType>
 		DataBuffer&	operator>>(TType& obj);
+
+		size_t					rawSize(void) const;
+		const unsigned char*	rawData(void) const;
+		void					setRawData(const unsigned char* data, size_t size);
 
 		class NotEnoughByteToDeserializeException : public std::runtime_error
 		{

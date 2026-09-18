@@ -19,12 +19,13 @@ class ThreadSafeQueue
 		TType	pop_front(void);
 		TType	pop_back(void);
 
+		bool	try_pop_front(TType& res);
+		bool	try_pop_back(TType& res);
+
 		class ThreadSafeQueueEmptyException : public std::runtime_error
 		{
 			public: explicit ThreadSafeQueueEmptyException() : runtime_error("ThreadSafeQueue: Queue empty.") {}
 		};
 };
-
-
 
 #include "thread_safe_queue.tpp"

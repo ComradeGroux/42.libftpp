@@ -5,6 +5,7 @@
 #include <stdexcept>
 #include <utility>
 #include <cstring>
+#include <type_traits>
 
 template <typename T, typename = void>
 struct is_container : std::false_type {};
