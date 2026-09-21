@@ -31,7 +31,7 @@ class Message
 	public:
 		Message(Type type);
 
-		int			type(void) const noexcept;
+		int	type(void) const noexcept;
 
 		template <typename TType>
 		friend Message&	operator<<(Message& msg, const TType& data);

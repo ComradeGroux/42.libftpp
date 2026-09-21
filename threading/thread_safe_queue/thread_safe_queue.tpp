@@ -58,7 +58,7 @@ bool	ThreadSafeQueue<TType>::try_pop_front(TType& res)
 	std::lock_guard<std::mutex>	lock(_mutex);
 	if (_queue.empty())
 		return false;
-	res = std::move(_queue.back());
+	res = std::move(_queue.front());
 	_queue.pop_front();
 	return true;
 }
