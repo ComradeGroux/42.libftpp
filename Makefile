@@ -15,6 +15,9 @@ SRCS		:=	data_structures/data_buffer/data_buffer.cpp \
 				threading/thread/thread.cpp \
 				threading/worker_pool/worker_pool.cpp \
 				threading/persistent_worker/persistent_worker.cpp \
+				network/message/message.cpp \
+				network/client/client.cpp \
+				network/server/server.cpp \
 				mathematics/random_2d_coordinate_generator/random_2d_coordinate_generator.cpp \
 				mathematics/perlin_noise_2d/perlin_noise_2d.cpp
 OBJS		:= $(addprefix $(OBJS_DIR)/, $(notdir $(SRCS:.cpp=.o)))
@@ -26,9 +29,13 @@ TEST_OBJS		:= $(addprefix $(OBJS_TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=.o)))
 TEST_BINS		:= $(addprefix $(TEST_DIR)/, $(notdir $(TEST_SRCS:.cpp=)))
 
 CXX 		:= g++
-CXXFLAGS	:= -Wall -Wextra -Werror -std=c++17 -I.
+CXXFLAGS	:= -Wall -Wextra -Werror -std=c++17 -pthread -I.
 
 all: $(TARGET)
+
+debug: CXXFLAGS += -g -DDEBUG
+debug: all
+
 
 $(TARGET): $(OBJS)
 	@printf "$(BOLD)Linking $(TARGET)$(RESET)\n"
